@@ -1,0 +1,21 @@
+{
+  "name": "sudoku.monster",
+  "version": "0.1.0",
+  "description": "Sudoku PWA",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brennie/sudoku.monster.git"
+  },
+  "keywords": [
+    "sudoku",
+    "puzzle",
+    "game"
+  ],
+  "author": "Barret Rennie <barret@brennie.ca>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/brennie/sudoku.monster/issues"
+  },
+  "homepage": "https://github.com/brennie/sudoku.monster#readme"
+}
