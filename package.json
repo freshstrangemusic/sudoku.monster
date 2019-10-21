@@ -17,5 +17,40 @@
   "bugs": {
     "url": "https://github.com/brennie/sudoku.monster/issues"
   },
-  "homepage": "https://github.com/brennie/sudoku.monster#readme"
+  "homepage": "https://github.com/brennie/sudoku.monster#readme",
+  "scripts": {
+    "eslint": "eslint",
+    "webpack": "webpack",
+    "webpack-dev-server": "webpack-dev-server"
+  },
+  "dependencies": {
+    "normalize.css": "^8.0.1",
+    "react": "^16.10.2",
+    "react-dom": "^16.10.2"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.9",
+    "@types/react-dom": "^16.9.2",
+    "@typescript-eslint/eslint-plugin": "^2.4.0",
+    "@typescript-eslint/parser": "^2.4.0",
+    "autoprefixer": "^9.6.5",
+    "css-loader": "^3.2.0",
+    "css-modules-typescript-loader": "^3.0.1",
+    "cssnano": "^4.1.10",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.4.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "postcss-loader": "^3.0.0",
+    "postcss-preset-env": "^6.7.0",
+    "prettier": "^1.18.2",
+    "script-ext-html-webpack-plugin": "^2.1.4",
+    "ts-loader": "^6.2.0",
+    "typescript": "^3.6.4",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.9",
+    "webpack-dev-server": "^3.8.2"
+  }
 }
