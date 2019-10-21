@@ -11,10 +11,16 @@ export default function Sudoku(): JSX.Element {
       const cells = [];
 
       for (let i = 0; i < 9; i++) {
-        cells.push(<Cell key={i} />);
+        const cellY = y * 3 + Math.floor(i / 3);
+        const cellX = x * 3 + (i % 3);
+        cells.push(<Cell key={`${cellY}${cellX}`} x={cellX} y={cellY} />);
       }
 
-      subgrids.push(<div className={styles["subgrid"]}>{cells}</div>);
+      subgrids.push(
+        <div key={`${y}${x}`} className={styles["subgrid"]}>
+          {cells}
+        </div>,
+      );
     }
   }
 
