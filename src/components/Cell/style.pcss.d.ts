@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'cell': string;
+  'cell--focused': string;
   'cell__input': string;
 }
 declare const cssExports: CssExports;

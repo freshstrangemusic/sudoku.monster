@@ -26,6 +26,7 @@
   "dependencies": {
     "normalize.css": "^8.0.1",
     "postcss-nested": "^4.1.2",
+    "ramda": "^0.26.1",
     "react": "^16.10.2",
     "react-dom": "^16.10.2",
     "react-redux": "^7.1.1",
@@ -33,6 +34,7 @@
     "redux-devtools-extension": "^2.13.8"
   },
   "devDependencies": {
+    "@types/ramda": "^0.26.33",
     "@types/react": "^16.9.9",
     "@types/react-dom": "^16.9.2",
     "@types/react-redux": "^7.1.5",

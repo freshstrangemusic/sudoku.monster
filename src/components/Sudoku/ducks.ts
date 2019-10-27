@@ -1,6 +1,9 @@
+import { equals } from "ramda";
+
 import { Sudoku, Value, newSudoku, setSudokuCell } from "../../sudoku.ts";
 
 const SET_CELL = "sudoku.monster/sudoku/SET_CELL";
+const FOCUS_CELL = "sudoku.monster/sudoku/FOCUS_CELL";
 
 export interface SetCellAction {
   type: "sudoku.monster/sudoku/SET_CELL";
@@ -20,14 +23,39 @@ export const setCell = (x: number, y: number, value: Value): SetCellAction => ({
   },
 });
 
-type Action = SetCellAction;
+export interface FocusCellAction {
+  type: "sudoku.monster/sudoku/FOCUS_CELL";
+  payload: {
+    cell?: {
+      x: number;
+      y: number;
+    };
+  };
+}
+
+export const focusCell = (cell?: {
+  x: number;
+  y: number;
+}): FocusCellAction => ({
+  type: FOCUS_CELL,
+  payload: {
+    cell,
+  },
+});
+
+type Action = SetCellAction | FocusCellAction;
 
 export interface State {
   sudoku: Sudoku;
+  focus: {
+    x: number;
+    y: number;
+  } | null;
 }
 
 const defaultState = {
   sudoku: newSudoku(),
+  focus: null,
 };
 
 export default (state: State = defaultState, action: Action): State => {
@@ -38,6 +66,19 @@ export default (state: State = defaultState, action: Action): State => {
       return {
         ...state,
         sudoku: setSudokuCell(state.sudoku, x, y, value),
+      };
+    }
+
+    case FOCUS_CELL: {
+      const { cell } = action.payload;
+
+      if (equals(cell, state.focus)) {
+        return state;
+      }
+
+      return {
+        ...state,
+        focus: cell ? { ...cell } : null,
       };
     }
 

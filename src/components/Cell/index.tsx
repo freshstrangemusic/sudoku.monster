@@ -1,8 +1,9 @@
 import * as React from "react";
 import { connect } from "react-redux";
+import { equals } from "ramda";
 
-import { State, SetCellAction, setCell } from "../Sudoku/ducks.ts";
-import { Value, parseValue } from "../../sudoku.ts";
+import { FocusCellAction, State, focusCell } from "../Sudoku/ducks.ts";
+import { Value } from "../../sudoku.ts";
 import * as styles from "./style.pcss";
 
 interface OwnProps {
@@ -11,30 +12,35 @@ interface OwnProps {
 }
 
 interface StateProps {
+  focused: boolean;
   locked: boolean;
   value: Value;
 }
 
 type Props = OwnProps &
   StateProps & {
-    setCell: (x: number, y: number, value: Value) => void;
+    focusCell: (x: number, y: number) => void;
   };
 
 const Cell = (props: Props): JSX.Element => {
-  const { x, y, value, locked, setCell } = props;
+  const { x, y, focused, focusCell, value, locked } = props;
 
-  const inner = locked ? (
-    <span>{value || ""}</span>
-  ) : (
-    <input
-      className={styles["cell__input"]}
-      maxLength={1}
-      value={value || ""}
-      onChange={(e): void => setCell(x, y, parseValue(e.target.value))}
-    />
+  const classes = [styles["cell"]];
+  if (focused) {
+    classes.push(styles["cell--focused"]);
+  }
+
+  return (
+    <div
+      className={classes.join(" ")}
+      onClick={(e): void => {
+        e.nativeEvent.stopImmediatePropagation();
+        focusCell(x, y);
+      }}
+    >
+      <span className={locked ? "" : styles["cell__input"]}>{value}</span>
+    </div>
   );
-
-  return <div className={styles["cell"]}>{inner}</div>;
 };
 
 const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
@@ -42,14 +48,14 @@ const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
   const cell = state.sudoku[y][x];
 
   return {
-    value: cell.value,
+    focused: equals({ x, y }, state.focus),
     locked: cell.locked,
+    value: cell.value,
   };
 };
 
 const mapDispatchToProps = {
-  setCell: (x: number, y: number, value: Value): SetCellAction =>
-    setCell(x, y, value),
+  focusCell: (x: number, y: number): FocusCellAction => focusCell({ x, y }),
 };
 
 export default connect(
