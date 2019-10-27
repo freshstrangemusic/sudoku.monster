@@ -2,6 +2,7 @@
 // Please do not change this file!
 interface CssExports {
   'sudoku-monster': string;
+  'sudoku-monster__banner': string;
 }
 declare const cssExports: CssExports;
 export = cssExports;

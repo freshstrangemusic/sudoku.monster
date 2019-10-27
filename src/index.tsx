@@ -14,7 +14,9 @@ window.addEventListener("load", () => {
 
   render(
     <div className={styles["sudoku-monster"]}>
-      <h1>sudoku.monster</h1>
+      <div className={styles["sudoku-monster__banner"]}>
+        <h1>sudoku.monster</h1>
+      </div>
       <Provider store={store}>
         <Sudoku />
       </Provider>
