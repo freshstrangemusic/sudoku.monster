@@ -7,20 +7,14 @@ import { actions } from "./ducks.ts";
 import * as styles from "./style.pcss";
 
 interface Props {
-  clearFocus: () => void;
   setCells: (value: Value) => void;
 }
 
 class Sudoku extends React.Component<Props, {}> {
-  clearFocus: () => void;
   onKeyDown: (e: KeyboardEvent) => void;
 
   constructor(props: Props) {
     super(props);
-
-    this.clearFocus = (): void => {
-      this.props.clearFocus();
-    };
 
     this.onKeyDown = (e: KeyboardEvent): void => {
       const { setCells } = this.props;
@@ -38,12 +32,10 @@ class Sudoku extends React.Component<Props, {}> {
   }
 
   public componentDidMount(): void {
-    document.addEventListener("click", this.clearFocus);
     document.body.addEventListener("keydown", this.onKeyDown);
   }
 
   public componentWillUnmount(): void {
-    document.removeEventListener("click", this.clearFocus);
     document.body.removeEventListener("keydown", this.onKeyDown);
   }
 
@@ -68,19 +60,11 @@ class Sudoku extends React.Component<Props, {}> {
       }
     }
 
-    return (
-      <div
-        className={styles["grid"]}
-        onClick={(e): void => e.nativeEvent.stopImmediatePropagation()}
-      >
-        {subgrids}
-      </div>
-    );
+    return <div className={styles["grid"]}>{subgrids}</div>;
   }
 }
 
 const mapDispatchToProps = {
-  clearFocus: (): ReturnType<typeof actions.clearFocus> => actions.clearFocus(),
   setCells: (value: Value): ReturnType<typeof actions.setCells> =>
     actions.setCells(value),
 };

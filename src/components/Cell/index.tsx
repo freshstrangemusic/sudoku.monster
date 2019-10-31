@@ -20,7 +20,7 @@ interface StateProps {
 type Props = OwnProps &
   StateProps & {
     focusCell: (x: number, y: number, union: boolean) => void;
-    setDragging: (dragging: boolean) => void;
+    startDragging: () => void;
   };
 
 const Cell = (props: Props): JSX.Element => {
@@ -29,7 +29,7 @@ const Cell = (props: Props): JSX.Element => {
     focusCell,
     focused,
     locked,
-    setDragging,
+    startDragging,
     value,
     x,
     y,
@@ -44,11 +44,8 @@ const Cell = (props: Props): JSX.Element => {
     <div
       className={classes.join(" ")}
       onMouseDown={(): void => {
-        setDragging(true);
+        startDragging();
         focusCell(x, y, false);
-      }}
-      onMouseUp={(): void => {
-        setDragging(false);
       }}
       onMouseEnter={(): void => {
         if (dragging) {
@@ -74,8 +71,8 @@ const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
 };
 
 const mapDispatchToProps = {
-  setDragging: (dragging: boolean): ReturnType<typeof actions.setDragging> =>
-    actions.setDragging(dragging),
+  startDragging: (): ReturnType<typeof actions.setDragging> =>
+    actions.setDragging(true),
   focusCell: (
     x: number,
     y: number,
