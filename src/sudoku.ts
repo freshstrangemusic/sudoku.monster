@@ -21,25 +21,13 @@ export const parseValue = (s: string): Value => {
   return null;
 };
 
-/**
- * A Sudoku cell.
- */
-export interface Cell {
-  /**
-   * The current value of the cell.
-   */
-  readonly value: Value;
+export interface Sudoku {
+  /** The values of individual cells. */
+  readonly values: Value[][];
 
-  /**
-   * Whether or not the cell is locked, i.e., provided by the initial state.
-   */
-  readonly locked: boolean;
+  /** The locked state of individual cells. */
+  readonly locked: boolean[][];
 }
-
-/**
- * A Sudoku puzzle, which is a 9x9 grid of `Cell`s.
- */
-export type Sudoku = Cell[][];
 
 // The current, hardcoded puzzle.
 const _puzzle: Value[][] = [
@@ -58,57 +46,16 @@ const _puzzle: Value[][] = [
  * Transform a grid of values into a Sudoku.
  */
 const toSudoku = (puzzle: Value[][]): Sudoku => {
-  return puzzle.map(row =>
-    row.map(value => ({
-      value,
-      locked: value !== null,
-    })),
-  );
+  const values = puzzle.map(row => row.map(value => value));
+  const locked = puzzle.map(row => row.map(value => value !== null));
+
+  return {
+    values,
+    locked,
+  };
 };
 
 export const newSudoku = (): Sudoku => {
   // TODO: Generate puzzles.
   return toSudoku(_puzzle);
-};
-
-/**
- * Set the cell in the puzzle given by the x, y coordinates to the given value.
- *
- * If the cell is locked, this is a no-op.
- *
- * A new puzzle is returned with the cell set.
- */
-export const setSudokuCell = (
-  sudoku: Sudoku,
-  x: number,
-  y: number,
-  value: Value,
-): Sudoku => {
-  if (sudoku[y][x].locked) {
-    return sudoku;
-  }
-
-  const newSudoku = sudoku.slice();
-  const row = (newSudoku[y] = newSudoku[y].slice());
-
-  row[x] = {
-    ...row[x],
-    value,
-  };
-
-  return newSudoku;
-};
-
-/**
- * Reset the puzzle to its original state.
- *
- * All unlocked cells will be cleared.
- */
-export const resetSudoku = (sudoku: Sudoku): Sudoku => {
-  return sudoku.map(row =>
-    row.map(cell => ({
-      value: cell.locked ? cell.value : null,
-      locked: cell.locked,
-    })),
-  );
 };

@@ -45,12 +45,14 @@ const Cell = (props: Props): JSX.Element => {
 
 const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
   const { x, y } = ownProps;
-  const cell = state.sudoku[y][x];
+  const { sudoku, focus } = state;
+  const value = sudoku.values[y][x];
+  const locked = sudoku.locked[y][x];
 
   return {
-    focused: equals({ x, y }, state.focus),
-    locked: cell.locked,
-    value: cell.value,
+    focused: equals({ x, y }, focus),
+    locked,
+    value,
   };
 };
 

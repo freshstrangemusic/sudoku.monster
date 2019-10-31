@@ -95,7 +95,7 @@ const mapStateToProps = (state: State): StateProps => {
     return {
       focus: {
         ...focus,
-        locked: sudoku[focus.y][focus.x].locked,
+        locked: sudoku.locked[focus.y][focus.x],
       },
     };
   }

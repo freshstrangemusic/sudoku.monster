@@ -1,6 +1,7 @@
 import { equals } from "ramda";
 
-import { Sudoku, Value, newSudoku, setSudokuCell } from "../../sudoku.ts";
+import { Sudoku, Value, newSudoku } from "../../sudoku.ts";
+import { update2D } from "../../utils.ts";
 
 const SET_CELL = "sudoku.monster/sudoku/SET_CELL";
 const FOCUS_CELL = "sudoku.monster/sudoku/FOCUS_CELL";
@@ -62,10 +63,18 @@ export default (state: State = defaultState, action: Action): State => {
   switch (action.type) {
     case SET_CELL: {
       const { x, y, value } = action.payload;
+      const { sudoku } = state;
+
+      if (sudoku.locked[y][x]) {
+        return state;
+      }
 
       return {
         ...state,
-        sudoku: setSudokuCell(state.sudoku, x, y, value),
+        sudoku: {
+          ...sudoku,
+          values: update2D(sudoku.values, x, y, value),
+        },
       };
     }
 
