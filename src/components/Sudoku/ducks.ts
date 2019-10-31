@@ -6,6 +6,7 @@ import { clone2D, update2D } from "../../utils.ts";
 const CLEAR_FOCUS = "sudoku.monster/sudoku/CLEAR_FOCUS";
 const FOCUS_CELL = "sudoku.monster/sudoku/FOCUS_CELL";
 const SET_CELLS = "sudoku.monster/sudoku/SET_CELLS";
+const SET_DRAGGING = "sudoku.monster/sudoku/SET_DRAGGING";
 
 export interface ClearFocusAction {
   type: "sudoku.monster/sudoku/CLEAR_FOCUS";
@@ -47,17 +48,37 @@ const setCells = (value: Value): SetCellsAction => ({
   },
 });
 
+interface SetDraggingAction {
+  type: "sudoku.monster/sudoku/SET_DRAGGING";
+  payload: {
+    dragging: boolean;
+  };
+}
+
+const setDragging = (dragging: boolean): SetDraggingAction => ({
+  type: SET_DRAGGING,
+  payload: {
+    dragging,
+  },
+});
+
 export const actions = {
   clearFocus,
   focusCell,
   setCells,
+  setDragging,
 };
 
-type Action = ClearFocusAction | FocusCellAction | SetCellsAction;
+type Action =
+  | ClearFocusAction
+  | FocusCellAction
+  | SetCellsAction
+  | SetDraggingAction;
 
 export interface State {
   sudoku: Sudoku;
   focused: boolean[][];
+  dragging: boolean;
 }
 
 const newFocus = (): boolean[][] => times(() => repeat(false, 9), 9);
@@ -65,6 +86,7 @@ const newFocus = (): boolean[][] => times(() => repeat(false, 9), 9);
 const defaultState = {
   sudoku: newSudoku(),
   focused: newFocus(),
+  dragging: false,
 };
 
 export default (state: State = defaultState, action: Action): State => {
@@ -82,8 +104,7 @@ export default (state: State = defaultState, action: Action): State => {
       if (union) {
         focused = update2D(state.focused, x, y, true);
       } else {
-        focused = newFocus(),
-        focused[y][x] = true;
+        (focused = newFocus()), (focused[y][x] = true);
       }
 
       return {
@@ -127,6 +148,12 @@ export default (state: State = defaultState, action: Action): State => {
         },
       };
     }
+
+    case SET_DRAGGING:
+      return {
+        ...state,
+        dragging: action.payload.dragging,
+      };
 
     default:
       return state;

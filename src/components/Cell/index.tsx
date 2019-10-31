@@ -11,6 +11,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  dragging: boolean;
   focused: boolean;
   locked: boolean;
   value: Value;
@@ -19,10 +20,20 @@ interface StateProps {
 type Props = OwnProps &
   StateProps & {
     focusCell: (x: number, y: number, union: boolean) => void;
+    setDragging: (dragging: boolean) => void;
   };
 
 const Cell = (props: Props): JSX.Element => {
-  const { x, y, focused, focusCell, value, locked } = props;
+  const {
+    dragging,
+    focusCell,
+    focused,
+    locked,
+    setDragging,
+    value,
+    x,
+    y,
+  } = props;
 
   const classes = [styles["cell"]];
   if (focused) {
@@ -32,9 +43,17 @@ const Cell = (props: Props): JSX.Element => {
   return (
     <div
       className={classes.join(" ")}
-      onClick={(e): void => {
-        e.nativeEvent.stopImmediatePropagation();
+      onMouseDown={(): void => {
+        setDragging(true);
         focusCell(x, y, false);
+      }}
+      onMouseUp={(): void => {
+        setDragging(false);
+      }}
+      onMouseEnter={(): void => {
+        if (dragging) {
+          focusCell(x, y, true);
+        }
       }}
     >
       <span className={locked ? "" : styles["cell__input"]}>{value}</span>
@@ -44,9 +63,10 @@ const Cell = (props: Props): JSX.Element => {
 
 const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
   const { x, y } = ownProps;
-  const { focused, sudoku } = state;
+  const { dragging, focused, sudoku } = state;
 
   return {
+    dragging,
     focused: focused[y][x],
     locked: sudoku.locked[y][x],
     value: sudoku.values[y][x],
@@ -54,6 +74,8 @@ const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
 };
 
 const mapDispatchToProps = {
+  setDragging: (dragging: boolean): ReturnType<typeof actions.setDragging> =>
+    actions.setDragging(dragging),
   focusCell: (
     x: number,
     y: number,

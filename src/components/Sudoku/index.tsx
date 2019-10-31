@@ -68,7 +68,14 @@ class Sudoku extends React.Component<Props, {}> {
       }
     }
 
-    return <div className={styles["grid"]}>{subgrids}</div>;
+    return (
+      <div
+        className={styles["grid"]}
+        onClick={(e): void => e.nativeEvent.stopImmediatePropagation()}
+      >
+        {subgrids}
+      </div>
+    );
   }
 }
 
