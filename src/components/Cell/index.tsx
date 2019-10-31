@@ -5,6 +5,8 @@ import { State, actions } from "../Sudoku/ducks.ts";
 import { Value } from "../../sudoku.ts";
 import * as styles from "./style.pcss";
 
+const isMac = /^Mac/.test(navigator.platform);
+
 interface OwnProps {
   x: number;
   y: number;
@@ -43,9 +45,14 @@ const Cell = (props: Props): JSX.Element => {
   return (
     <div
       className={classes.join(" ")}
-      onMouseDown={(): void => {
+      onMouseDown={(e): void => {
         startDragging();
-        focusCell(x, y, false);
+
+        if ((isMac && e.metaKey) || (!isMac && e.ctrlKey)) {
+          focusCell(x, y, true);
+        } else {
+          focusCell(x, y, false);
+        }
       }}
       onMouseEnter={(): void => {
         if (dragging) {
