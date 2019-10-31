@@ -1,93 +1,130 @@
-import { equals } from "ramda";
+import { repeat, times } from "ramda";
 
 import { Sudoku, Value, newSudoku } from "../../sudoku.ts";
-import { update2D } from "../../utils.ts";
+import { clone2D, update2D } from "../../utils.ts";
 
-const SET_CELL = "sudoku.monster/sudoku/SET_CELL";
+const CLEAR_FOCUS = "sudoku.monster/sudoku/CLEAR_FOCUS";
 const FOCUS_CELL = "sudoku.monster/sudoku/FOCUS_CELL";
+const SET_CELLS = "sudoku.monster/sudoku/SET_CELLS";
 
-export interface SetCellAction {
-  type: "sudoku.monster/sudoku/SET_CELL";
-  payload: {
-    x: number;
-    y: number;
-    value: Value;
-  };
+export interface ClearFocusAction {
+  type: "sudoku.monster/sudoku/CLEAR_FOCUS";
 }
 
-export const setCell = (x: number, y: number, value: Value): SetCellAction => ({
-  type: SET_CELL,
-  payload: {
-    x,
-    y,
-    value,
-  },
+const clearFocus = (): ClearFocusAction => ({
+  type: CLEAR_FOCUS,
 });
 
 export interface FocusCellAction {
   type: "sudoku.monster/sudoku/FOCUS_CELL";
   payload: {
-    cell?: {
-      x: number;
-      y: number;
-    };
+    x: number;
+    y: number;
+    union: boolean;
   };
 }
 
-export const focusCell = (cell?: {
-  x: number;
-  y: number;
-}): FocusCellAction => ({
+const focusCell = (x: number, y: number, union: boolean): FocusCellAction => ({
   type: FOCUS_CELL,
   payload: {
-    cell,
+    x,
+    y,
+    union,
   },
 });
 
-type Action = SetCellAction | FocusCellAction;
+export interface SetCellsAction {
+  type: "sudoku.monster/sudoku/SET_CELLS";
+  payload: {
+    value: Value;
+  };
+}
+
+const setCells = (value: Value): SetCellsAction => ({
+  type: SET_CELLS,
+  payload: {
+    value,
+  },
+});
+
+export const actions = {
+  clearFocus,
+  focusCell,
+  setCells,
+};
+
+type Action = ClearFocusAction | FocusCellAction | SetCellsAction;
 
 export interface State {
   sudoku: Sudoku;
-  focus: {
-    x: number;
-    y: number;
-  } | null;
+  focused: boolean[][];
 }
+
+const newFocus = (): boolean[][] => times(() => repeat(false, 9), 9);
 
 const defaultState = {
   sudoku: newSudoku(),
-  focus: null,
+  focused: newFocus(),
 };
 
 export default (state: State = defaultState, action: Action): State => {
   switch (action.type) {
-    case SET_CELL: {
-      const { x, y, value } = action.payload;
-      const { sudoku } = state;
+    case CLEAR_FOCUS:
+      return {
+        ...state,
+        focused: newFocus(),
+      };
 
-      if (sudoku.locked[y][x]) {
-        return state;
+    case FOCUS_CELL: {
+      const { x, y, union } = action.payload;
+
+      let focused;
+      if (union) {
+        focused = update2D(state.focused, x, y, true);
+      } else {
+        focused = newFocus(),
+        focused[y][x] = true;
+      }
+
+      return {
+        ...state,
+        focused: update2D(focused, x, y, true),
+      };
+    }
+
+    case SET_CELLS: {
+      const { value } = action.payload;
+      const { focused, sudoku } = state;
+
+      const cells = focused.reduce(
+        (cells, row, y) =>
+          row.reduce((cells, isFocused, x) => {
+            if (isFocused && !sudoku.locked[y][x]) {
+              cells.push({ x, y });
+            }
+
+            return cells;
+          }, cells),
+        [] as { x: number; y: number }[],
+      );
+
+      let values;
+      if (cells.length === 1) {
+        const { x, y } = cells[0];
+        values = update2D(sudoku.values, x, y, value);
+      } else {
+        values = clone2D(sudoku.values);
+        for (const { x, y } of cells) {
+          values[y][x] = value;
+        }
       }
 
       return {
         ...state,
         sudoku: {
           ...sudoku,
-          values: update2D(sudoku.values, x, y, value),
+          values,
         },
-      };
-    }
-
-    case FOCUS_CELL: {
-      const { cell } = action.payload;
-
-      if (equals(cell, state.focus)) {
-        return state;
-      }
-
-      return {
-        ...state,
-        focus: cell ? { ...cell } : null,
       };
     }
 

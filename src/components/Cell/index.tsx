@@ -1,8 +1,7 @@
 import * as React from "react";
 import { connect } from "react-redux";
-import { equals } from "ramda";
 
-import { FocusCellAction, State, focusCell } from "../Sudoku/ducks.ts";
+import { State, actions } from "../Sudoku/ducks.ts";
 import { Value } from "../../sudoku.ts";
 import * as styles from "./style.pcss";
 
@@ -19,7 +18,7 @@ interface StateProps {
 
 type Props = OwnProps &
   StateProps & {
-    focusCell: (x: number, y: number) => void;
+    focusCell: (x: number, y: number, union: boolean) => void;
   };
 
 const Cell = (props: Props): JSX.Element => {
@@ -35,7 +34,7 @@ const Cell = (props: Props): JSX.Element => {
       className={classes.join(" ")}
       onClick={(e): void => {
         e.nativeEvent.stopImmediatePropagation();
-        focusCell(x, y);
+        focusCell(x, y, false);
       }}
     >
       <span className={locked ? "" : styles["cell__input"]}>{value}</span>
@@ -45,19 +44,21 @@ const Cell = (props: Props): JSX.Element => {
 
 const mapStateToProps = (state: State, ownProps: OwnProps): StateProps => {
   const { x, y } = ownProps;
-  const { sudoku, focus } = state;
-  const value = sudoku.values[y][x];
-  const locked = sudoku.locked[y][x];
+  const { focused, sudoku } = state;
 
   return {
-    focused: equals({ x, y }, focus),
-    locked,
-    value,
+    focused: focused[y][x],
+    locked: sudoku.locked[y][x],
+    value: sudoku.values[y][x],
   };
 };
 
 const mapDispatchToProps = {
-  focusCell: (x: number, y: number): FocusCellAction => focusCell({ x, y }),
+  focusCell: (
+    x: number,
+    y: number,
+    union: boolean,
+  ): ReturnType<typeof actions.focusCell> => actions.focusCell(x, y, union),
 };
 
 export default connect(
